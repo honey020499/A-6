@@ -17,6 +17,18 @@
         <main>
         <div class="card p-5 text-center text-white rounded-4  ">
 
+         <form id="weatherForm" class="mb-4">
+             <div class="input-group">
+                     <input
+                           type="text"
+                           id="cityInput"
+                          class="form-control"
+                        placeholder="Enter city name"
+                        required
+                    />
+                  <button type="submit" class="btn btn-light">Get </button>
+               </div>
+           </form>
             <h2 class="fs-3" ><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
   <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
       </svg><span id="location" class="ps-2"></span></h2>
@@ -45,23 +57,43 @@
     </div>
     
 </body>
-<script>
-    link="https://api.openweathermap.org/data/2.5/weather?q=hyderabad&appid=9f4a3bbda51c0a9bf2aa2681945dbe67";
-    var request=  new XMLHttpRequest();
-    request.open('GET',link,true);
-    request.onload=function(){
-        var obj=JSON.parse(this.response);
-        console.log(obj);
 
-        document.getElementById('weather').innerHTML=obj.weather[0].description;
-           document.getElementById('location').innerHTML=obj.name;
-              document.getElementById('temp').innerHTML= Math.floor(obj.main.temp-273.15);
-              document.getElementById('humidity').innerHTML=obj.main.humidity;
-            document.getElementById('speed').innerHTML = (obj.wind.speed * 3.6).toFixed(2);
-                 document.getElementById('icon').src= "https://openweathermap.org/img/w/" + obj.weather[0].icon +".png";
 
+  <script>
+    const form = document.getElementById('weatherForm');
+    const input = document.getElementById('cityInput');
+
+    function getWeather(city) {
+      const apiKey = "9f4a3bbda51c0a9bf2aa2681945dbe67";
+      const link = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+
+      const request = new XMLHttpRequest();
+      request.open('GET', link, true);
+      request.onload = function () {
+        if (request.status === 200) {
+          const obj = JSON.parse(this.response);
+          document.getElementById('weather').innerHTML = obj.weather[0].description;
+          document.getElementById('location').innerHTML = obj.name;
+          document.getElementById('temp').innerHTML = Math.floor(obj.main.temp - 273.15);
+          document.getElementById('humidity').innerHTML = obj.main.humidity;
+          document.getElementById('speed').innerHTML = (obj.wind.speed * 3.6).toFixed(2);
+          document.getElementById('icon').src = "https://openweathermap.org/img/w/" + obj.weather[0].icon + ".png";
+        } else {
+          alert("City not found!");
+        }
+      };
+      request.send();
     }
-   
-    request.send();
-</script>
+
+    // Load default weather for Hyderabad on start
+    getWeather("Hyderabad");
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const city = input.value.trim();
+      if (city) getWeather(city);
+    });
+  </script>
+
+
 </html>
